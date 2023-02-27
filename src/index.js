@@ -20,16 +20,16 @@ mongoose.connect(uri,
 
 // import routes
 // const clientRoutes = require('./routes/client')
-// const userRoutes = require('./routes/user')
+const userRoutes = require('./routes/user')
 // const authRoutes = require('./routes/auth');
 // const dashboadRoutes = require('./routes/dashboard');
-// const verifyToken = require('./routes/validate-token');
+const verifyToken = require('./routes/validate-token');
 
 // route middlewares
 // app.use('/api/user', authRoutes);
 // app.use('/api/dashboard', verifyToken, dashboadRoutes);
 // app.use('/client', verifyToken, clientRoutes);
-// app.use('/user', verifyToken, userRoutes);
+app.use('/user', verifyToken, userRoutes);
 
 app.get('/', (req, res) => {
     res.json({
@@ -41,5 +41,5 @@ app.get('/', (req, res) => {
 // iniciar server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`servidor andando en: http://localhost:${PORT}/`)
+    console.log(`servidor andando en el puerto ${PORT}`)
 })
