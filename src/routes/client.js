@@ -1,7 +1,35 @@
 const router = require('express').Router();
 const Client = require('../models/Client');
 
-//register
+//Search client
+router.get('/Search/', async (req, res) => {
+    const body = req.body;
+    console.log('body', body)
+    console.log('body', req.user)
+    const {role} = req.user
+
+    if (role!=='moderator' || role!=='admin') res.status(403).json({error: 'Usuario no tiene permiso'})
+
+    try {
+        const userDB = await Client.find(
+            body
+        )
+        res.json({
+            estado: true,
+            mensaje: 'exito',
+            data: req.body, //borrar
+            user:userDB
+        })
+    } catch (error) {
+        console.log(error)
+        res.json({
+            estado: false,
+            mensaje: 'error'
+        })
+    }
+})
+
+//create
 
 router.post('/register', async (req, res) => {
     const {name, email, userName, lastName, role} =req.body

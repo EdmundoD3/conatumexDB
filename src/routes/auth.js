@@ -7,7 +7,6 @@ const bcrypt = require('bcrypt');
 
 // validation
 const Joi = require('@hapi/joi');
-const { isValid } = require('../modules/validateString');
 
 const schemaRegister = Joi.object({
     userName: Joi.string().min(6).max(255).required(),
@@ -23,11 +22,7 @@ const schemaLogin = Joi.object({
     password: Joi.string().min(6).max(1024).required()
 })
 
-const schemaUpdate = Joi.object({
-    name: Joi.string().min(6).max(255).required(),
-    email: Joi.string().min(6).max(255).required().email(),
-    password: Joi.string().min(6).max(1024).required()
-})
+
 
 //login
 
@@ -68,6 +63,8 @@ router.post('/login', async (req, res) => {
 //register
 
 router.post('/register', async (req, res) => {
+    const { isValid } = require('../modules/validateString');
+    
     const {name, email, userName, lastName, role} =req.body
     // validate user
     const { error } = schemaRegister.validate(req.body)

@@ -19,16 +19,16 @@ mongoose.connect(uri,
 .catch(e => console.log('error db:', e))
 
 // import routes
-// const clientRoutes = require('./routes/client')
+const clientRoutes = require('./routes/client')
 const userRoutes = require('./routes/user')
-// const authRoutes = require('./routes/auth');
-// const dashboadRoutes = require('./routes/dashboard');
+const authRoutes = require('./routes/auth');
+const dashboadRoutes = require('./routes/dashboard');
 const verifyToken = require('./routes/validate-token');
 
 // route middlewares
-// app.use('/api/user', authRoutes);
-// app.use('/api/dashboard', verifyToken, dashboadRoutes);
-// app.use('/client', verifyToken, clientRoutes);
+app.use('/api/user', authRoutes);
+app.use('/api/dashboard', verifyToken, dashboadRoutes);
+app.use('/client', verifyToken, clientRoutes);
 app.use('/user', verifyToken, userRoutes);
 
 app.get('/', (req, res) => {

@@ -1,20 +1,31 @@
 const router = require('express').Router();
 const User = require('../models/User');
 
+const bcrypt = require('bcrypt');
+
+const Joi = require('@hapi/joi');
+
+const schemaUpdate = Joi.object({
+    userName: Joi.string().min(6).max(255).required(),
+    email: Joi.string().min(6).max(255).email(),
+    numberPhone: Joi.string().min(6).max(1024)
+})
+
 
 //Editar otro usuario
 
 router.put('/admin/edit/', async (req, res) => {
-    const body = req.body;
+    const {reduceObject} = require("../modules/selectedParams")
+    const body = reduceObject(req.body,["password","_id"]);
     const {_id} = req.body;
-    console.log(_id)
-    console.log('body', body)
-    console.log('body', req.user)
     const {role} = req.user
 
     if (role!=='admin') res.status(403).json({error: 'Usuario no tiene permiso'})
 
     try {
+        const isActiveUser = await User.findById(_id)
+        if (!isActiveUser.isActive) return res.status(403).json({error: 'Usuario inactivo'})
+
         const userDB = await User.findByIdAndUpdate(
             _id, body, { useFindAndModify: false }
         )
@@ -33,28 +44,39 @@ router.put('/admin/edit/', async (req, res) => {
     }
 })
 
-//Editar propio usuario
+//Edit own user
 
-router.put('/edit/:id', async (req, res) => {
-    const id = req.params.id;
-    const {name, lastName, email} = req.body;
-    const body={name, lastName, email}
-    console.log(_id)
-    console.log('body', body)
-    console.log('body', req.user)
+router.put('/edit/', async (req, res) => {
+    const {filterObject} = require("../modules/selectedParams")
+
+    const id = req.body._id;
+    if (!id) res.status(404).json({error: 'incluya el id del usuario'})
+
+    const body = filterObject(req.body, ["email", "numberPhone"])
+
     const idUser = req.user.id
 
     if (idUser!==id) res.status(403).json({error: 'Usuario no tiene permiso'})
+    
+    if (req.body.hasOwnProperty('password')) {
+        // hash contraseña
+        const salt = await bcrypt.genSalt(10);
+        const password = await bcrypt.hash(req.body.password, salt);
+        body.password = password
+    }
 
     try {
+        const isActiveUser = await User.findById({_id:id})
+        if (!isActiveUser.isActive) return res.status(403).json({error: 'Usuario inactivo'})
+
         const userDB = await User.findByIdAndUpdate(
             {_id:id}, body, { useFindAndModify: false }
         )
+        const bodyDB = filterObject(userDB, ["userName", "email", "numberPhone"])
         res.json({
             estado: true,
             mensaje: 'exito',
-            data: req.body, //borrar
-            user:userDB
+            user:bodyDB
         })
     } catch (error) {
         console.log(error)
