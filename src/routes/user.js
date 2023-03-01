@@ -3,14 +3,6 @@ const User = require('../models/User');
 
 const bcrypt = require('bcrypt');
 
-const Joi = require('@hapi/joi');
-
-const schemaUpdate = Joi.object({
-    userName: Joi.string().min(6).max(255).required(),
-    email: Joi.string().min(6).max(255).email(),
-    numberPhone: Joi.string().min(6).max(1024)
-})
-
 
 //Editar otro usuario
 
