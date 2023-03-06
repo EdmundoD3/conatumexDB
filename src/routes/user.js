@@ -64,7 +64,7 @@ router.put('/edit/', async (req, res) => {
         const userDB = await User.findByIdAndUpdate(
             {_id:id}, body, { useFindAndModify: false }
         )
-        const bodyDB = filterObject(userDB, ["userName", "email", "numberPhone"])
+        const bodyDB = filterObject(userDB, ["username", "email", "numberPhone"])
         res.json({
             estado: true,
             mensaje: 'exito',

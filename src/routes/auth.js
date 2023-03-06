@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const Joi = require('@hapi/joi');
 
 const schemaRegister = Joi.object({
-    userName: Joi.string().min(6).max(255).required(),
+    username: Joi.string().min(6).max(255).required(),
     name: Joi.string().min(3).max(255).required(),
     lastName: Joi.string().min(3).max(255).required(),
     email: Joi.string().min(6).max(255).required().email(),
@@ -18,7 +18,7 @@ const schemaRegister = Joi.object({
 })
 
 const schemaLogin = Joi.object({
-    userName: Joi.string().min(6).max(255).required(),
+    username: Joi.string().min(6).max(255).required(),
     password: Joi.string().min(6).max(1024).required()
 })
 
@@ -33,9 +33,9 @@ router.post('/login', async (req, res) => {
     const { error } = schemaLogin.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message })
     
-    const {userName} = req.body
+    const {username} = req.body
 
-    const user = await User.findOne({ userName: userName });
+    const user = await User.findOne({ username: username });
     if (!user) return res.status(400).json({ error: 'Usuario no encontrado' });
 
     const validPassword = await bcrypt.compare(req.body.password, user.password);
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     const { isValid } = require('../modules/validateString');
     
-    const {name, email, userName, lastName, role} =req.body
+    const {name, email, username, lastName, role} =req.body
     // validate user
     const { error } = schemaRegister.validate(req.body)
     
@@ -78,8 +78,8 @@ router.post('/register', async (req, res) => {
         if (isValid(req.body[property])) return res.status(400).json({error: `Caracteres no válidos en ${property}`})
     }
 
-    const isUserNameExist = await User.findOne({ userName: userName });
-    if (isUserNameExist) {
+    const isUsernameExist = await User.findOne({ username: username });
+    if (isUsernameExist) {
         return res.status(400).json({error: 'user-name ya registrado'})
     }
 
@@ -93,7 +93,7 @@ router.post('/register', async (req, res) => {
     const password = await bcrypt.hash(req.body.password, salt);
 
     const user = new User({
-        userName: userName,
+        username: username,
         name: name,
         lastName: lastName,
         email: email,

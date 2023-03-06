@@ -32,7 +32,7 @@ router.get('/Search/', async (req, res) => {
 //create
 
 router.post('/register', async (req, res) => {
-    const {name, email, userName, lastName, role} =req.body
+    const {name, email, username, lastName, role} =req.body
     // validate user
     const { error } = schemaRegister.validate(req.body)
     
@@ -45,8 +45,8 @@ router.post('/register', async (req, res) => {
         if (isValid(req.body[property])) return res.status(400).json({error: `Caracteres no válidos en ${property}`})
     }
 
-    const isUserNameExist = await User.findOne({ userName: userName });
-    if (isUserNameExist) {
+    const isUsernameExist = await User.findOne({ username: username });
+    if (isUsernameExist) {
         return res.status(400).json({error: 'user-name ya registrado'})
     }
 
@@ -60,7 +60,7 @@ router.post('/register', async (req, res) => {
     const password = await bcrypt.hash(req.body.password, salt);
 
     const user = new User({
-        userName: userName,
+        username: username,
         name: name,
         lastName: lastName,
         email: email,
